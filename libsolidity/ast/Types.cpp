@@ -2358,7 +2358,7 @@ string FunctionType::richIdentifier() const
 	case Kind::Require: id += "require"; break;
 	case Kind::ABIEncode: id += "abiencode"; break;
 	case Kind::ABIEncodePacked: id += "abiencodepacked"; break;
-	case Kind::ABIEncodeSelector: id += "abiencodeselector"; break;
+	case Kind::ABIEncodeWithSelector: id += "abiencodeselector"; break;
 	default: solAssert(false, "Unknown function location."); break;
 	}
 	id += "_" + stateMutabilityToString(m_stateMutability);
@@ -3033,30 +3033,31 @@ MemberList::MemberMap MagicType::nativeMembers(ContractDefinition const*) const
 	case Kind::ABI:
 		return MemberList::MemberMap({
 			{"encode", make_shared<FunctionType>(
-				TypePointers(),
-				TypePointers{make_shared<ArrayType>(DataLocation::Memory)},
 				strings(),
-				strings(),
+				strings{"bytes memory"},
 				FunctionType::Kind::ABIEncode,
 				true,
 				StateMutability::Pure
 			)},
 			{"encodePacked", make_shared<FunctionType>(
-				TypePointers(),
-				TypePointers{make_shared<ArrayType>(DataLocation::Memory)},
 				strings(),
-				strings(),
+				strings{"bytes memory"},
 				FunctionType::Kind::ABIEncodePacked,
 				true,
 				StateMutability::Pure
 			)},
-			{"encodeSelector", make_shared<FunctionType>(
-				strings{"string"},
+			{"encodeWithSelector", make_shared<FunctionType>(
 				strings{"bytes4"},
-				strings(),
-				strings(),
-				FunctionType::Kind::ABIEncodeSelector,
-				false,
+				strings{"bytes memory"},
+				FunctionType::Kind::ABIEncodeWithSelector,
+				true,
+				StateMutability::Pure
+			)},
+			{"encodeWithSignature", make_shared<FunctionType>(
+				strings{"string memory"},
+				strings{"bytes memory"},
+				FunctionType::Kind::ABIEncodeWithSignature,
+				true,
 				StateMutability::Pure
 			)}
 		});
